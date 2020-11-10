@@ -157,19 +157,21 @@ void CGame::Update(void)
 		m_bEnd = true;
 		m_NextScene = SCENENO_GAMECLEAR;
 	}
-
-
-	//F2キーでゲームクリア画面へ
-	if (g_pInput->IsKeyPush(MOFKEY_F2))
-	{
-		m_bEnd = true;
-		m_NextScene = SCENENO_GAMECLEAR;
-	}
 	//プレイヤーの終了フラグでゲームオーバー画面へ
 	if (m_Player.IsEnd())
 	{
 		m_bEnd = true;
 		m_NextScene = SCENENO_GAMEOVER;
+	}
+
+	/**
+	 * デバッグ
+	 */
+	//F2キーでゲームクリア画面へ
+	if (g_pInput->IsKeyPush(MOFKEY_F2))
+	{
+		m_bEnd = true;
+		m_NextScene = SCENENO_GAMECLEAR;
 	}
 	//F3キーでゲームオーバー画面へ
 	if (g_pInput->IsKeyPush(MOFKEY_F3))

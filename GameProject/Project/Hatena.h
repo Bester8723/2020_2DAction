@@ -1,13 +1,22 @@
-#pragma once
+/*************************************************************************//*!
 
+					@file	Hatena.h
+					@brief	はてなブロック。
+
+															@author	池上　綾香
+*//**************************************************************************/
+
+#pragma once
+//INCLUDE
 #include	"Mof.h"
 #include	"GameDefine.h"
 #include	"Item.h"
 
+
 class CHatena
 {
 private:
-	CTexture*				m_pTexture;		//テクスチャ
+	CTexture*				m_pTexture;		
 	float					m_PosX;
 	float					m_PosY;
 	float					m_MoveX;
@@ -19,7 +28,6 @@ public:
 	CHatena();
 	~CHatena();
 	void Initialize(float px, float py);
-	void Update(void);
 	void CollisionPlayer(CRectangle prec, CItem& pItem);
 	void Render(float wx, float wy);
 	void Release(void);

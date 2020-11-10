@@ -1,4 +1,15 @@
+/*************************************************************************//*!
+
+					@file	Hatena.cpp
+					@brief	はてなブロック。
+
+															@author	池上　綾香
+*//**************************************************************************/
+
+
+//INCLUDE
 #include "Hatena.h"
+
 
 /**
  * コンストラクタ
@@ -42,20 +53,6 @@ void CHatena::Initialize(float px, float py)
 	m_bShow = true;
 	m_bItem = true;
 	m_SrcRect = CRectangle(0, 0, 32, 32);
-}
-
-/**
- * 更新
- *
- */
-void CHatena::Update(void)
-{
-	//非表示
-	if (!m_bShow)
-	{
-		return;
-	}
-	
 }
 
 /**
