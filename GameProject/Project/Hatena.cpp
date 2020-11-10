@@ -115,4 +115,5 @@ void CHatena::Render(float wx, float wy)
  */
 void CHatena::Release(void)
 {
+	m_pTexture->Release();
 }

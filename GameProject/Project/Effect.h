@@ -1,7 +1,16 @@
-#pragma once
+/*************************************************************************//*!
 
+					@file	Effect.h
+					@brief	エフェクトの中身。
+
+															@author	池上　綾香
+*//**************************************************************************/
+
+#pragma once
+//INCLUDE
 #include	"Mof.h"
-#include	"GameDefine.h"
+#include	"EffectManager.h"
+
 
 //エフェクト種類列挙
 enum tag_EFFECTTYPE {
@@ -14,12 +23,12 @@ enum tag_EFFECTTYPE {
 
 class CEffect {
 private:
-	CTexture*				m_pTexture;
-	CSpriteMotionController	m_Motion;
-	float					m_PosX;
-	float					m_PosY;
-	bool					m_bShow;
-	CRectangle				m_SrcRect;
+	CTexture*					m_pTexture;
+	CSpriteMotionController		m_Motion;
+	float						m_PosX;
+	float						m_PosY;
+	bool						m_bShow;
+	CRectangle					m_SrcRect;
 
 public:
 	CEffect();

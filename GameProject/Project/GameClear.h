@@ -1,8 +1,20 @@
-#pragma once
+/*************************************************************************//*!
 
-class CGameClear {
+					@file	GameClear.h
+					@brief	ゲームクリア画面。
+
+															@author	池上　綾香
+*//**************************************************************************/
+
+#pragma once
+//INCLUDE
+#include	"SceneBase.h"
+#include	"GameDefine.h"
+
+
+class CGameClear : public CSceneBase {
 private:
-	CTexture				m_BackImage;
+
 public:
 	CGameClear();
 	~CGameClear();

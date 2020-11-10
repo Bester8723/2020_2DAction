@@ -1,15 +1,22 @@
-#include	"GameDefine.h"
+/*************************************************************************//*!
+
+					@file	Title.cpp
+					@brief	タイトル画面。
+
+															@author	池上　綾香
+*//**************************************************************************/
+
+
+//INCLUDE
 #include	"Title.h"
 
-//変更するシーン(外部参照、実体はGameApp.cpp)
-extern int						gChangeScene;
 
 /**
  * コンストラクタ
  *
  */
 CTitle::CTitle() :
-	m_BackImage() {
+CSceneBase() {
 }
 
 /**
@@ -24,14 +31,10 @@ CTitle::~CTitle() {
  * 利用するテクスチャを読み込む。
  */
 bool CTitle::Load(void) {
-	//テクスチャの読み込み
-	if (!m_BackImage.Load("Title.png"))
-	{
-		return false;
-	}
+	//背景テクスチャを読み込む
+	if (!m_BackTexture.Load("Title.png"))	return FALSE;
 
-
-	return true;
+	return TRUE;
 }
 
 /**
@@ -40,6 +43,10 @@ bool CTitle::Load(void) {
  * 状態を初期化したいときに実行する。
  */
 void CTitle::Initialize(void) {
+	//読み込み
+	Load();
+	//フラグ類の初期化
+	m_bEnd = false;
 }
 
 /**
@@ -50,7 +57,8 @@ void CTitle::Update(void) {
 	//Enterキーでゲーム画面へ
 	if (g_pInput->IsKeyPush(MOFKEY_RETURN))
 	{
-		gChangeScene = SCENENO_GAME;
+		m_bEnd = true;
+		m_NextScene = SCENENO_GAME;
 	}
 }
 
@@ -59,8 +67,10 @@ void CTitle::Update(void) {
  *
  */
 void CTitle::Render(void) {
+	//背景色の変更
 	CGraphicsUtilities::RenderFillRect(0, 0, 1024, 768, MOF_COLOR_WHITE);
-	m_BackImage.Render(0, 200);
+	//テクスチャの描画
+	m_BackTexture.Render(0, 200);
 	CGraphicsUtilities::RenderString(400, 500, MOF_COLOR_BLACK, "Press Enter Key");
 }
 
@@ -69,7 +79,8 @@ void CTitle::Render(void) {
  *
  */
 void CTitle::RenderDebug(void) {
-
+	//デバッグ描画
+	CGraphicsUtilities::RenderString(10, 10, MOF_COLOR_BLACK, "タイトル画面");
 }
 
 /**
@@ -77,5 +88,6 @@ void CTitle::RenderDebug(void) {
  *
  */
 void CTitle::Release(void) {
-	m_BackImage.Release();
+	//テクスチャの解放
+	m_BackTexture.Release();
 }

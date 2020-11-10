@@ -1,15 +1,22 @@
-#include	"GameDefine.h"
+/*************************************************************************//*!
+
+					@file	GameClear.cpp
+					@brief	ゲームクリア画面。
+
+															@author	池上　綾香
+*//**************************************************************************/
+
+
+//INCLUDE
 #include	"GameClear.h"
 
-//変更するシーン(外部参照、実体はGameApp.cpp)
-extern int						gChangeScene;
 
 /**
  * コンストラクタ
  *
  */
 CGameClear::CGameClear() :
-	m_BackImage() {
+CSceneBase() {
 }
 
 /**
@@ -24,14 +31,10 @@ CGameClear::~CGameClear() {
  * 利用するテクスチャを読み込む。
  */
 bool CGameClear::Load(void) {
-	//テクスチャの読み込み
-	if (!m_BackImage.Load("Clear.png"))
-	{
-		return false;
-	}
+	//テクスチャを読み込む
+	if (!m_BackTexture.Load("GameClear.png"))	return FALSE;
 
-
-	return true;
+	return TRUE;
 }
 
 /**
@@ -40,6 +43,10 @@ bool CGameClear::Load(void) {
  * 状態を初期化したいときに実行する。
  */
 void CGameClear::Initialize(void) {
+	//読み込み
+	Load();
+	//フラグ類を初期化
+	m_bEnd = false;
 }
 
 /**
@@ -50,7 +57,8 @@ void CGameClear::Update(void) {
 	//Enterキーでタイトル画面へ
 	if (g_pInput->IsKeyPush(MOFKEY_RETURN))
 	{
-		gChangeScene = SCENENO_TITLE;
+		m_bEnd = true;
+		m_NextScene = SCENENO_TITLE;
 	}
 }
 
@@ -59,7 +67,8 @@ void CGameClear::Update(void) {
  *
  */
 void CGameClear::Render(void) {
-	m_BackImage.Render(0, 0);
+	//テクスチャの描画
+	m_BackTexture.Render(0, 0);
 	CGraphicsUtilities::RenderString(400, 500, MOF_COLOR_WHITE, "Press Enter Key");
 }
 
@@ -68,6 +77,8 @@ void CGameClear::Render(void) {
  *
  */
 void CGameClear::RenderDebug(void) {
+	//デバッグ描画
+	CGraphicsUtilities::RenderString(10, 10, MOF_COLOR_BLACK, "ゲームクリア画面");
 }
 
 /**
@@ -75,5 +86,6 @@ void CGameClear::RenderDebug(void) {
  *
  */
 void CGameClear::Release(void) {
-	m_BackImage.Release();
+	//テクスチャの解放
+	m_BackTexture.Release();
 }

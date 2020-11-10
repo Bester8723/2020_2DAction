@@ -1,8 +1,19 @@
-#pragma once
+/*************************************************************************//*!
 
-class CTitle {
+					@file	Title.h
+					@brief	タイトル画面。
+
+															@author	池上　綾香
+*//**************************************************************************/
+#pragma once
+//INCLUDE
+#include	"SceneBase.h"
+#include	"GameDefine.h"
+
+
+class CTitle : public CSceneBase {
 private:
-	CTexture				m_BackImage;
+
 public:
 	CTitle();
 	~CTitle();

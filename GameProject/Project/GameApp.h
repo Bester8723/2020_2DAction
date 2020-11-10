@@ -12,12 +12,23 @@
 //INCLUDE
 #include	"Mof.h"
 
+#include	"SceneBase.h"
+#include	"GameDefine.h"
+#include	"Title.h"
+#include	"Game.h"
+#include	"GameClear.h"
+#include	"GameOver.h"
+
+
 /*******************************//*!
 @brief	基本ゲームアプリ。
 
 @author	濱田　享
 *//********************************/
 class CGameApp : public CSingleGameApplication {
+private:
+	//デバッグ表示フラグ
+	bool					m_bDebug = false;
 public:
 	/*************************************************************************//*!
 			@brief			コンストラクタ

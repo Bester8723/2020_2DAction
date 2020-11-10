@@ -106,6 +106,7 @@
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Stage.cpp" />
+    <ClCompile Include="StageTemplate.cpp" />
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
@@ -121,7 +122,9 @@
     <ClInclude Include="Hatena.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="SceneBase.h" />
     <ClInclude Include="Stage.h" />
+    <ClInclude Include="StageTemplate.h" />
     <ClInclude Include="Title.h" />
   </ItemGroup>
   <ItemGroup>

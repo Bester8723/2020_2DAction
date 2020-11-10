@@ -1,28 +1,39 @@
+/*************************************************************************//*!
+
+					@file	Stage.cpp
+					@brief	ステージ。
+
+															@author	池上　綾香
+*//**************************************************************************/
+
+
+//INCLUDE
 #include	"Stage.h"
 #include	<sys/stat.h>
+
 
 /**
  * コンストラクタ
  *
  */
 CStage::CStage() :
-	m_ChipTexture(),
-	m_BackTexture(),
-	m_ChipSize(0),
-	m_XCount(0),
-	m_YCount(0),
-	m_pChipData(NULL),
-	m_ScrollX(0),
-	m_ScrollY(0),
-	m_EnemyTextureCount(0),
-	m_pEnemyTexture(NULL),
-	m_EnemyCount(0),
-	m_ItemTextureCount(0),
-	m_pItemTexture(NULL),
-	m_ItemCount(0),
-	m_HatenaTextureCount(0),
-	m_pHatenaTexture(NULL),
-	m_HatenaCount(0) {
+m_ChipTexture(),
+m_BackTexture(),
+m_ChipSize(0),
+m_XCount(0),
+m_YCount(0),
+m_pChipData(NULL),
+m_ScrollX(0),
+m_ScrollY(0),
+m_EnemyTextureCount(0),
+m_pEnemyTexture(NULL),
+m_EnemyCount(0),
+m_ItemTextureCount(0),
+m_pItemTexture(NULL),
+m_ItemCount(0),
+m_HatenaTextureCount(0),
+m_pHatenaTexture(NULL),
+m_HatenaCount(0) {
 }
 
 /**
@@ -40,206 +51,14 @@ CStage::~CStage() {
  * [in]			pName				ステージファイルの名前
  */
 bool CStage::Load(char* pName) {
-	//テキストファイルを開く
-	FILE* fp = fopen(pName, "rt");
-	if (fp == NULL)
-	{
-		return false;
-	}
-	//ファイルの全容量を調べる
-	fseek(fp, 0, SEEK_END);
-	long fSize = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
-	//ファイルサイズ分だけのメモリを確保する
-	char* pBuffer = (char*)malloc(fSize + 1);
-	//ファイルをすべてバッファに読み込む
-	fSize = fread(pBuffer, 1, fSize, fp);
-	pBuffer[fSize] = '\0';
-	char* pstr;
+	//ステージの読み込み
+	if (!m_StageTpl.LoadFile(	"Stage.txt",
+								&m_ChipTexture, &m_BackTexture, &m_ChipSize, &m_XCount, &m_YCount, &m_pChipData,
+								&m_EnemyTextureCount, &m_pEnemyTexture, &m_pEnemyData, &m_EnemyCount,
+								&m_ItemTextureCount, &m_pItemTexture, &m_pItemData, &m_ItemCount,
+								&m_HatenaTextureCount, &m_pHatenaTexture, &m_pHatenaData, &m_HatenaCount))	return FALSE;
 
-	//マップの読み込み
-	pstr = strtok(pBuffer, ",");
-	if (!LoadMap(pstr))
-		return false;
-	//敵の読み込み
-	pstr = strtok(NULL, ",");
-	if (!LoadEnemy(pstr))
-		return false;
-	//アイテムの読み込み
-	pstr = strtok(NULL, ",");
-	if (!LoadItem(pstr))
-		return false;
-	//はてなブロックの読み込み
-	pstr = strtok(NULL, ",");
-	if (!LoadHatena(pstr))
-		return false;
-
-	//ファイルを閉じる
-	fclose(fp);
-	free(pBuffer);
-
-	return true;
-}
-
-/**
- * マップの読み込み
- * 利用するテクスチャとステージファイルを読み込む。
- *
- * 引数
- * [in]			pMapStr				利用する文字列
- */
-bool CStage::LoadMap(char* pMapStr)
-{
-	//テクスチャの読み込み
-	if (!m_BackTexture.Load(pMapStr))
-	{
-		return false;
-	}
-	pMapStr = strtok(NULL, ",");
-	if (!m_ChipTexture.Load(pMapStr))
-	{
-		return false;
-	}
-
-	//チップサイズ
-	m_ChipSize = atof(strtok(NULL, ","));
-
-	//マップのチップ数
-	m_XCount = atoi(strtok(NULL, ","));
-	m_YCount = atoi(strtok(NULL, ","));
-
-	//マップチップ用のメモリを確保
-	m_pChipData = (char*)malloc(m_XCount * m_YCount);
-
-	//チップデータの読み込み
-	for (int y = 0; y < m_YCount; y++)
-	{
-		for (int x = 0; x < m_XCount; x++)
-		{
-			m_pChipData[y * m_XCount + x] = atoi(strtok(NULL, ","));
-		}
-	}
-
-	return true;
-}
-
-/**
- * 敵の読み込み
- * 利用するテクスチャとステージファイルを読み込む。
- *
- * 引数
- * [in]			pEnemyStr				利用する文字列
- */
-bool CStage::LoadEnemy(char* pEnemyStr)
-{
-	//敵のテクスチャの読み込み
-	m_EnemyTextureCount = atoi(pEnemyStr);
-	m_pEnemyTexture = new CTexture[m_EnemyTextureCount];
-	for (int i = 0; i < m_EnemyTextureCount; i++)
-	{
-		pEnemyStr = strtok(NULL, ",");
-		if (!m_pEnemyTexture[i].Load(pEnemyStr))
-		{
-			return false;
-		}
-	}
-
-	//配置データの読み込み
-	m_pEnemyData = (char*)malloc(m_XCount * m_YCount);
-	m_EnemyCount = 0;
-	for (int y = 0; y < m_YCount; y++)
-	{
-		for (int x = 0; x < m_XCount; x++)
-		{
-			m_pEnemyData[y * m_XCount + x] = atoi(strtok(NULL, ","));
-			if (m_pEnemyData[y * m_XCount + x] > 0)
-			{
-				m_EnemyCount++;
-			}
-		}
-	}
-
-	return true;
-}
-
-/**
- * アイテムの読み込み
- * 利用するテクスチャとステージファイルを読み込む。
- *
- * 引数
- * [in]			pItemStr				利用する文字列
- */
-bool CStage::LoadItem(char* pItemStr)
-{
-	//アイテムのテクスチャ読み込み
-	m_ItemTextureCount = atoi(pItemStr);
-	m_pItemTexture = new CTexture[m_ItemTextureCount];
-	for (int i = 0; i < m_ItemTextureCount; i++)
-	{
-		pItemStr = strtok(NULL, ",");
-		if (!m_pItemTexture[i].Load(pItemStr))
-		{
-			return false;
-		}
-	}
-
-	//配置データの読み込み
-	m_pItemData = (char*)malloc(m_XCount * m_YCount);
-	m_ItemCount = 0;
-	for (int y = 0; y < m_YCount; y++)
-	{
-		for (int x = 0; x < m_XCount; x++)
-		{
-			pItemStr = strtok(NULL, ",");
-			m_pItemData[y * m_XCount + x] = atoi(pItemStr);
-			if (m_pItemData[y * m_XCount + x] > 0)
-			{
-				m_ItemCount++;
-			}
-		}
-	}
-
-	return true;
-}
-
-/**
- * はてなブロックの読み込み
- * 利用するテクスチャとステージファイルを読み込む。
- *
- * 引数
- * [in]			phatenaStr				利用する文字列
- */
-bool CStage::LoadHatena(char* pHatenaStr)
-{
-	//はてなブロックのテクスチャ読み込み
-	m_HatenaTextureCount = atoi(pHatenaStr);
-	m_pHatenaTexture = new CTexture[m_HatenaTextureCount];
-	for (int i = 0; i < m_HatenaTextureCount; i++)
-	{
-		pHatenaStr = strtok(NULL, ",");
-		if (!m_pHatenaTexture[i].Load(pHatenaStr))
-		{
-			return false;
-		}
-	}
-
-	//配置データの読み込み
-	m_pHatenaData = (char*)malloc(m_XCount * m_YCount);
-	m_HatenaCount = 0;
-	for (int y = 0; y < m_YCount; y++)
-	{
-		for (int x = 0; x < m_XCount; x++)
-		{
-			pHatenaStr = strtok(NULL, ",");
-			m_pHatenaData[y * m_XCount + x] = atoi(pHatenaStr);
-			if (m_pHatenaData[y * m_XCount + x] > 0)
-			{
-				m_HatenaCount++;
-			}
-		}
-	}
-
-	return true;
+	return TRUE;
 }
 
 /**

@@ -1,15 +1,22 @@
-#include	"GameDefine.h"
+/*************************************************************************//*!
+
+					@file	GameOver.cpp
+					@brief	ゲームオーバー画面。
+
+															@author	池上　綾香
+*//**************************************************************************/
+
+
+//INCLUDE
 #include	"GameOver.h"
 
-//変更するシーン(外部参照、実体はGameApp.cpp)
-extern int						gChangeScene;
 
 /**
  * コンストラクタ
  *
  */
 CGameOver::CGameOver() :
-	m_BackImage() {
+CSceneBase() {
 }
 
 /**
@@ -24,13 +31,10 @@ CGameOver::~CGameOver() {
  * 利用するテクスチャを読み込む。
  */
 bool CGameOver::Load(void) {
-	//テクスチャの読み込み
-	if (!m_BackImage.Load("GameOver.png"))
-	{
-		return false;
-	}
+	//テクスチャを読み込む
+	if (!m_BackTexture.Load("GameOver.png"))		return FALSE;
 
-	return true;
+	return TRUE;
 }
 
 /**
@@ -39,6 +43,10 @@ bool CGameOver::Load(void) {
  * 状態を初期化したいときに実行する。
  */
 void CGameOver::Initialize(void) {
+	//読み込み
+	Load();
+	//フラグ類の初期化
+	m_bEnd = false;
 }
 
 /**
@@ -48,7 +56,8 @@ void CGameOver::Initialize(void) {
 void CGameOver::Update(void) {
 	if (g_pInput->IsKeyPush(MOFKEY_RETURN))
 	{
-		gChangeScene = SCENENO_TITLE;
+		m_bEnd = true;
+		m_NextScene = SCENENO_TITLE;
 	}
 }
 
@@ -57,7 +66,8 @@ void CGameOver::Update(void) {
  *
  */
 void CGameOver::Render(void) {
-	m_BackImage.Render(0, 0);
+	//テクスチャの描画
+	m_BackTexture.Render(0, 0);
 	CGraphicsUtilities::RenderString(400, 500, MOF_COLOR_WHITE, "Press Enter Key");
 }
 
@@ -66,6 +76,8 @@ void CGameOver::Render(void) {
  *
  */
 void CGameOver::RenderDebug(void) {
+	//デバッグ描画
+	CGraphicsUtilities::RenderString(10, 10, MOF_COLOR_WHITE, "ゲームオーバー画面");
 }
 
 /**
@@ -73,5 +85,6 @@ void CGameOver::RenderDebug(void) {
  *
  */
 void CGameOver::Release(void) {
-	m_BackImage.Release();
+	//テクスチャの解放
+	m_BackTexture.Release();
 }

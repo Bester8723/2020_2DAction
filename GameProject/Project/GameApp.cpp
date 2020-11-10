@@ -10,25 +10,8 @@
 //INCLUDE
 #include	"GameApp.h"
 
-#include	"GameDefine.h"
-#include	"Title.h"
-#include	"Game.h"
-#include	"GameClear.h"
-#include	"GameOver.h"
-
-//現在のシーン
-int						gScene = SCENENO_TITLE;
-//変更するシーン
-int						gChangeScene = SCENENO_TITLE;
-
-//各シーンクラス
-CTitle					gTitleScene;
-CGame					gGameScene;
-CGameClear				gGameClearScene;
-CGameOver				gGameOverScene;
-
-//デバッグ表示フラグ
-bool					g_bDebug = false;
+//シーンクラス
+CSceneBase*				gpScene = NULL;
 
 
 /*************************************************************************//*!
@@ -41,13 +24,11 @@ bool					g_bDebug = false;
 MofBool CGameApp::Initialize(void){
 	//リソース配置ディレクトリの設定
 	CUtilities::SetCurrentDirectory("Resource");
-	//シーンの必要リソースを全て読み込む
-	gTitleScene.Load();
-	gGameScene.Load();
-	gGameClearScene.Load();
-	gGameOverScene.Load();
+
 	//最初に実行されるシーンの初期化
-	gTitleScene.Initialize();
+	gpScene = new CTitle();
+	gpScene->Initialize();
+
 	return TRUE;
 }
 /*************************************************************************//*!
@@ -61,48 +42,39 @@ MofBool CGameApp::Update(void){
 	//キーの更新
 	g_pInput->RefreshKey();
 
-	//シーン番号によって更新
-	switch (gScene)
+	//シーンの更新
+	gpScene->Update();
+	//シーンが終了したか
+	if (gpScene->IsEnd())
 	{
-	case SCENENO_TITLE:
-		gTitleScene.Update();
-		break;
-	case SCENENO_GAME:
-		gGameScene.Update();
-		break;
-	case SCENENO_GAMECLEAR:
-		gGameClearScene.Update();
-		break;
-	case SCENENO_GAMEOVER:
-		gGameOverScene.Update();
-		break;
-	}
-
-	//シーン変更があった場合変更先シーンの初期化
-	if (gChangeScene != gScene)
-	{
-		switch (gChangeScene)
+		//次のシーンを取得
+		int change = gpScene->GetNextScene();
+		//古いシーンを消去する
+		gpScene->Release();
+		delete gpScene;
+		//次のシーン番号に応じてシーンを作って初期化する
+		switch (change)
 		{
 		case SCENENO_TITLE:
-			gTitleScene.Initialize();
+			gpScene = new CTitle();
 			break;
 		case SCENENO_GAME:
-			gGameScene.Initialize();
+			gpScene = new CGame();
 			break;
 		case SCENENO_GAMECLEAR:
-			gGameClearScene.Initialize();
+			gpScene = new CGameClear();
 			break;
 		case SCENENO_GAMEOVER:
-			gGameOverScene.Initialize();
+			gpScene = new CGameOver();
 			break;
 		}
-		gScene = gChangeScene;
+		gpScene->Initialize();
 	}
 
 	//デバッグ表示の切り替え
 	if (g_pInput->IsKeyPush(MOFKEY_F1))
 	{
-		g_bDebug = ((g_bDebug) ? false : true);
+		m_bDebug = ((m_bDebug) ? false : true);
 	}
 
 	return TRUE;
@@ -120,42 +92,12 @@ MofBool CGameApp::Render(void){
 	//画面のクリア
 	g_pGraphics->ClearTarget(0.0f,0.0f,0.0f,1.0f,1.0f,0);
 
-	//シーン番号によって描画
-	switch (gScene)
+	//シーンの描画
+	gpScene->Render();
+	//シーンのデバッグ描画
+	if (m_bDebug)
 	{
-	case SCENENO_TITLE:
-		gTitleScene.Render();
-		break;
-	case SCENENO_GAME:
-		gGameScene.Render();
-		break;
-	case SCENENO_GAMECLEAR:
-		gGameClearScene.Render();
-		break;
-	case SCENENO_GAMEOVER:
-		gGameOverScene.Render();
-		break;
-	}
-
-	//デバッグ表示をする場合
-	if (g_bDebug)
-	{
-		//シーン番号によって描画
-		switch (gScene)
-		{
-		case SCENENO_TITLE:
-			gTitleScene.RenderDebug();
-			break;
-		case SCENENO_GAME:
-			gGameScene.RenderDebug();
-			break;
-		case SCENENO_GAMECLEAR:
-			gGameClearScene.RenderDebug();
-			break;
-		case SCENENO_GAMEOVER:
-			gGameOverScene.RenderDebug();
-			break;
-		}
+		gpScene->RenderDebug();
 	}
 
 	//描画の終了
@@ -170,9 +112,12 @@ MofBool CGameApp::Render(void){
 						それ以外	失敗、エラーコードが戻り値となる
 *//**************************************************************************/
 MofBool CGameApp::Release(void){
-	gTitleScene.Release();
-	gGameScene.Release();
-	gGameClearScene.Release();
-	gGameOverScene.Release();
+	//シーンの解放
+	if (gpScene)
+	{
+		gpScene->Release();
+		delete gpScene;
+		gpScene = NULL;
+	}
 	return TRUE;
 }

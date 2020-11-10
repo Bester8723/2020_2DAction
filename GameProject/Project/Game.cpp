@@ -1,23 +1,29 @@
-#include	"Game.h"
-#include	"GameDefine.h"
+/*************************************************************************//*!
 
-//変更するシーン(外部参照、実体はGameApp.cpp)
-extern int						gChangeScene;
+					@file	Game.cpp
+					@brief	ゲーム画面。
+
+															@author	池上　綾香
+*//**************************************************************************/
+
+
+//INCLUDE
+#include	"Game.h"
+
 
 /**
  * コンストラクタ
  *
  */
 CGame::CGame() :
-m_Texture() {
+CSceneBase() {
 }
 
 /**
  * デストラクタ
  *
  */
-CGame::~CGame()
-{
+CGame::~CGame() {
 }
 
 /**
@@ -29,9 +35,9 @@ bool CGame::Load(void)
 	//プレイヤー素材の読み込み
 	m_Player.Load();
 	//ステージ素材の読み込み
-	m_Stage.Load("Stage.txt");
-	if (!m_Texture.Load("HP.png"))
-		return false;
+	if (!m_Stage.Load("Stage.txt"))		return FALSE;
+	//HPテクスチャの読み込み
+	if (!m_Texture.Load("HP.png"))		return FALSE;
 	//敵メモリ確保
 	m_EnemyArray = new CEnemy[m_Stage.GetEnemyCount()];
 	//アイテムメモリ確保
@@ -41,7 +47,7 @@ bool CGame::Load(void)
 	//エフェクトの素材読み込み
 	m_EffectManager.Load();
 
-	return true;
+	return TRUE;
 }
 
 /**
@@ -51,6 +57,10 @@ bool CGame::Load(void)
  */
 void CGame::Initialize(void)
 {
+	//読み込み
+	Load();
+	//フラグ類の初期化
+	m_bEnd = false;
 	//プレイヤーの状態初期化
 	m_Player.Initialize();
 	//ステージの状態初期化
@@ -144,24 +154,28 @@ void CGame::Update(void)
 	//プレイヤーのゴールフラグでゲームクリア画面へ
 	if (m_Player.IsGoal())
 	{
-		gChangeScene = SCENENO_GAMECLEAR;
+		m_bEnd = true;
+		m_NextScene = SCENENO_GAMECLEAR;
 	}
 
 
 	//F2キーでゲームクリア画面へ
 	if (g_pInput->IsKeyPush(MOFKEY_F2))
 	{
-		gChangeScene = SCENENO_GAMECLEAR;
+		m_bEnd = true;
+		m_NextScene = SCENENO_GAMECLEAR;
 	}
 	//プレイヤーの終了フラグでゲームオーバー画面へ
 	if (m_Player.IsEnd())
 	{
-		gChangeScene = SCENENO_GAMEOVER;
+		m_bEnd = true;
+		m_NextScene = SCENENO_GAMEOVER;
 	}
 	//F3キーでゲームオーバー画面へ
 	if (g_pInput->IsKeyPush(MOFKEY_F3))
 	{
-		gChangeScene = SCENENO_GAMEOVER;
+		m_bEnd = true;
+		m_NextScene = SCENENO_GAMEOVER;
 	}
 }
 
